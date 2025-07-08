@@ -74,11 +74,11 @@
       return;
     }
 
-    // Save user inputs to local storage
+    // Save input in localStorage
     localStorage.setItem("email", email);
     localStorage.setItem("question", question);
 
-    // Replace this with your actual Razorpay Payment Page URL
+    // Replace with your actual Razorpay Payment Page URL
     window.open("https://rzp.io/rzp/PDQNH98c", "_blank");
   });
 
@@ -114,6 +114,11 @@
     const email = localStorage.getItem("email");
     const question = localStorage.getItem("question");
 
+    // Refill form fields
+    if (email) document.getElementById("email").value = email;
+    if (question) document.getElementById("question").value = question;
+
+    // Check if user is redirected after payment
     const urlParams = new URLSearchParams(window.location.search);
     const paidParam = urlParams.get("paid");
 
@@ -128,4 +133,5 @@
 
 </body>
 </html>
+
 

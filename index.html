@@ -76,18 +76,19 @@
 
     localStorage.setItem("email", email);
     localStorage.setItem("question", question);
+    localStorage.setItem("paymentDone", "true");
 
     window.open("https://razorpay.me/@devisairupasaranyavadrevu", "_blank");
-
     submitBtn.disabled = false;
   });
 
   submitBtn.addEventListener("click", () => {
     const email = localStorage.getItem("email");
     const question = localStorage.getItem("question");
+    const paymentDone = localStorage.getItem("paymentDone") === "true";
 
-    if (!email || !question) {
-      alert("Missing data. Please re-enter your details.");
+    if (!email || !question || !paymentDone) {
+      alert("Missing info or payment not completed.");
       return;
     }
 
@@ -110,8 +111,14 @@
   });
 
   window.onload = () => {
-    if (localStorage.getItem("email") && localStorage.getItem("question")) {
+    const email = localStorage.getItem("email");
+    const question = localStorage.getItem("question");
+    const paymentDone = localStorage.getItem("paymentDone") === "true";
+
+    if (email && question && paymentDone) {
       submitBtn.disabled = false;
+    } else {
+      submitBtn.disabled = true;
     }
   };
 </script>

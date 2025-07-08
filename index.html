@@ -57,7 +57,7 @@
   <input type="email" id="email" placeholder="Enter your email" required />
   <textarea id="question" rows="4" placeholder="Enter your question" required></textarea>
   <button id="payBtn">Pay ₹10 via Razorpay</button>
-  <div class="note">After payment, return here and click Submit</div>
+  <div class="note">After payment, return to this page to submit your question.</div>
   <button id="submitBtn" disabled>Submit Question</button>
 </div>
 
@@ -74,12 +74,12 @@
       return;
     }
 
+    // Save user inputs to local storage
     localStorage.setItem("email", email);
     localStorage.setItem("question", question);
-    localStorage.setItem("paymentDone", "true");
 
+    // Replace this with your actual Razorpay Payment Page URL
     window.open("https://rzp.io/rzp/PDQNH98c", "_blank");
-    submitBtn.disabled = false;
   });
 
   submitBtn.addEventListener("click", () => {
@@ -88,7 +88,7 @@
     const paymentDone = localStorage.getItem("paymentDone") === "true";
 
     if (!email || !question || !paymentDone) {
-      alert("Missing info or payment not completed.");
+      alert("Payment not confirmed or missing information.");
       return;
     }
 
@@ -113,10 +113,13 @@
   window.onload = () => {
     const email = localStorage.getItem("email");
     const question = localStorage.getItem("question");
-    const paymentDone = localStorage.getItem("paymentDone") === "true";
 
-    if (email && question && paymentDone) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paidParam = urlParams.get("paid");
+
+    if (email && question && paidParam === "true") {
       submitBtn.disabled = false;
+      localStorage.setItem("paymentDone", "true");
     } else {
       submitBtn.disabled = true;
     }

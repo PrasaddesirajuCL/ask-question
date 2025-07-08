@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ask Me Anything</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 15px;
+    }
+    button {
+      background: #008CBA;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+    .note {
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Ask Me Anything</h2>
+  <input type="email" id="email" placeholder="Enter your email" required />
+  <textarea id="question" rows="4" placeholder="Enter your question" required></textarea>
+  <button id="payBtn">Pay ₹10 via Razorpay</button>
+  <div class="note">After payment, return here and click Submit</div>
+  <button id="submitBtn" disabled>Submit Question</button>
+</div>
+
+<script>
+  const payBtn = document.getElementById("payBtn");
+  const submitBtn = document.getElementById("submitBtn");
+
+  payBtn.addEventListener("click", () => {
+    const email = document.getElementById("email").value.trim();
+    const question = document.getElementById("question").value.trim();
+
+    if (!email || !question) {
+      alert("Please fill in both fields before proceeding to payment.");
+      return;
+    }
+
+    localStorage.setItem("email", email);
+    localStorage.setItem("question", question);
+
+    // Open Razorpay payment link
+    window.open("https://razorpay.me/@devisairupasaranyavadrevu", "_blank");
+
+    submitBtn.disabled = false;
+  });
+
+  submitBtn.addEventListener("click", () => {
+    const email = localStorage.getItem("email");
+    const question = localStorage.getItem("question");
+
+    if (!email || !question) {
+      alert("Missing data. Please re-enter your details.");
+      return;
+    }
+
+    fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, question })
+    })
+    .then(res => res.text())
+    .then(() => {
+      alert("Question submitted successfully!");
+      localStorage.clear();
+      document.getElementById("email").value = '';
+      document.getElementById("question").value = '';
+      submitBtn.disabled = true;
+    })
+    .catch(() => alert("Failed to submit. Please try again."));
+  });
+
+  // Auto-enable if data still exists after refresh
+  window.onload = () => {
+    if (localStorage.getItem("email") && localStorage.getItem("question")) {
+      submitBtn.disabled = false;
+    }
+  };
+</script>
+
+</body>
+</html>

@@ -74,14 +74,13 @@
       return;
     }
 
-    // Store form values in browser memory
     localStorage.setItem("email", email);
     localStorage.setItem("question", question);
 
-    // Open Razorpay payment link
+    // ✅ Open external Razorpay payment link
     window.open("https://razorpay.me/@devisairupasaranyavadrevu", "_blank");
 
-    // Enable Submit button
+    // Enable submit button
     submitBtn.disabled = false;
   });
 
@@ -94,7 +93,7 @@
       return;
     }
 
-    // Replace with your actual Google Script Web App URL
+    // ✅ Your Google Script Web App URL (replace this)
     fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -103,8 +102,7 @@
     .then(res => res.text())
     .then(() => {
       alert("Question submitted successfully!");
-      localStorage.removeItem("email");
-      localStorage.removeItem("question");
+      localStorage.clear();
       document.getElementById("email").value = '';
       document.getElementById("question").value = '';
       submitBtn.disabled = true;

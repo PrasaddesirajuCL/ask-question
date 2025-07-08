@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,7 +77,6 @@
     localStorage.setItem("email", email);
     localStorage.setItem("question", question);
 
-    // Open Razorpay payment link
     window.open("https://razorpay.me/@devisairupasaranyavadrevu", "_blank");
 
     submitBtn.disabled = false;
@@ -95,10 +93,12 @@
 
     fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ email, question })
     })
-    .then(res => res.text())
     .then(() => {
       alert("Question submitted successfully!");
       localStorage.clear();
@@ -109,7 +109,6 @@
     .catch(() => alert("Failed to submit. Please try again."));
   });
 
-  // Auto-enable if data still exists after refresh
   window.onload = () => {
     if (localStorage.getItem("email") && localStorage.getItem("question")) {
       submitBtn.disabled = false;
@@ -119,3 +118,4 @@
 
 </body>
 </html>
+

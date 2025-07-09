@@ -1,129 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Ask Me Anything</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"/>
+  <title>Ask me anything</title>
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .box {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      width: 350px;
-    }
-    h2 {
+      font-family: Arial;
+      background-color: #f0f4f8;
       text-align: center;
-      color: #333;
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     input, textarea, button {
       width: 100%;
-      margin: 10px 0;
-      padding: 12px;
-      font-size: 15px;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
-    button {
-      background: #008CBA;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:disabled {
-      background: #aaa;
+    button[disabled] {
+      background-color: #ccc;
       cursor: not-allowed;
     }
-    .note {
-      font-size: 13px;
-      color: #888;
-      text-align: center;
-      margin-bottom: 10px;
+    a.pay-link {
+      display: inline-block;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #007bff;
+      text-decoration: none;
+    }
+    ul.info-list {
+      text-align: left;
+      max-width: 500px;
+      margin: 30px auto 0;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      list-style: disc;
     }
   </style>
 </head>
 <body>
 
-<div class="box">
-  <h2>Ask Me Anything</h2>
-  <input type="email" id="email" placeholder="Enter your email" required />
-  <textarea id="question" rows="4" placeholder="Enter your question" required></textarea>
-  <button id="payBtn">Pay ₹10 via Razorpay</button>
-  <div class="note">After payment, return here and click Submit</div>
-  <button id="submitBtn" disabled>Submit Question</button>
-</div>
+  <h2>Ask me anything</h2>
+  <form id="questionForm">
+    <label>Your Email</label>
+    <input type="email" id="email" required />
 
-<script>
-  const payBtn = document.getElementById("payBtn");
-  const submitBtn = document.getElementById("submitBtn");
+    <label>Your Question</label>
+    <textarea id="question" rows="5" required></textarea>
 
-  payBtn.addEventListener("click", () => {
-    const email = document.getElementById("email").value.trim();
-    const question = document.getElementById("question").value.trim();
+    <a class="pay-link" href="https://rzp.io/rzp/PDQNH98c" target="_blank">Pay here</a>
 
-    if (!email || !question) {
-      alert("Please fill in both fields before proceeding to payment.");
-      return;
-    }
+    <br><br>
+    <button type="submit" id="submitBtn" disabled>Submit Question</button>
+  </form>
 
-    localStorage.setItem("email", email);
-    localStorage.setItem("question", question);
+  <ul class="info-list">
+    <li>This platform is for submitting any pharmeutical Regulatory Bodies related questions.</li>
+    <li>Users must complete a small payment to enable submission.</li>
+    <li>Submitted questions are securely stored in a Google Sheet.</li>
+    <li>Answers will be delivered directly to the provided email ID.</li>
+    <li>Simple and transparent: one payment, one expert answer.</li>
+  </ul>
 
-    // Open Razorpay payment link
-    window.open("https://rzp.io/rzp/PDQNH98c", "_blank");
+  <script>
+    // Save form data before redirect
+    document.querySelector(".pay-link").addEventListener("click", () => {
+      localStorage.setItem("email", document.getElementById("email").value);
+      localStorage.setItem("question", document.getElementById("question").value);
+    });
 
-    submitBtn.disabled = false;
-  });
+    // Enable submit button and restore form data if paid
+    window.onload = function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPaid = urlParams.get("paid");
+      const submitBtn = document.getElementById("submitBtn");
 
-  submitBtn.addEventListener("click", () => {
-    const email = localStorage.getItem("email");
-    const question = localStorage.getItem("question");
+      document.getElementById("email").value = localStorage.getItem("email") || "";
+      document.getElementById("question").value = localStorage.getItem("question") || "";
 
-    if (!email || !question) {
-      alert("Missing data. Please re-enter your details.");
-      return;
-    }
+      if (isPaid === "true") {
+        submitBtn.disabled = false;
+      }
+    };
 
-    fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, question })
-    })
-    .then(res => res.text())
-    .then(() => {
-      alert("Question submitted successfully!");
-      localStorage.clear();
-      document.getElementById("email").value = '';
-      document.getElementById("question").value = '';
-      submitBtn.disabled = true;
-    })
-    .catch(() => alert("Failed to submit. Please try again."));
-  });
+    document.getElementById("questionForm").addEventListener("submit", function (e) {
+      e.preventDefault();
 
-  // Auto-enable if data still exists after refresh
-  window.onload = () => {
-    if (localStorage.getItem("email") && localStorage.getItem("question")) {
-      submitBtn.disabled = false;
-    }
-  };
-</script>
-  <footer>
-    <p><strong>About This Website:</strong> </p>
-      <p>This platform allows users to Ask any question regarding pharmeutical Regulatory Bodies  after making a small payment.</p>
-     
-     <p> Your questions are stored securely, and responses will be sent directly to your email. </p>
-      
-     <p> It is a simple and transparent Q&A service created to help people get expert guidance or answers efficiently.</p>
-  </footer>
+      const email = document.getElementById("email").value;
+      const question = document.getElementById("question").value;
 
-
+      fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
+        method: "POST",
+        body: JSON.stringify({ email, question }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => res.text())
+      .then((data) => {
+        alert("Submitted successfully!");
+        localStorage.clear();
+        location.href = "/";
+      });
+    });
+  </script>
 </body>
 </html>

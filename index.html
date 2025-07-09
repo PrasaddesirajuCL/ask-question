@@ -64,6 +64,17 @@
   <div class="note">After payment, return to this page to submit your question.</div>
   <button id="submitBtn" disabled>Submit Question</button>
 </div>
+  <div class="content" style="margin: 40px auto; max-width: 500px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: left;">
+  <h3 style="text-align:center; margin-bottom: 15px;">About this Website</h3>
+  <ul style="line-height: 1.8; padding-left: 20px;">
+    <li>This platform allows you to ask questions related to pharmaceutical regulatory bodies.</li>
+    <li>A small payment is required to enable the submission button.</li>
+    <li>Your question and email are securely recorded in a connected Google Sheet.</li>
+    <li>Our expert will send the response to your email address.</li>
+    <li>Simple, private, and trustworthy – one payment, one expert answer.</li>
+  </ul>
+</div>
+
 
 <script>
   const payBtn = document.getElementById("payBtn");
@@ -77,17 +88,6 @@
       alert("Please fill in both fields before proceeding to payment.");
       return;
     }
-<!-- ADD BELOW -->
-<div class="content" style="margin: 40px auto; max-width: 500px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: left;">
-  <h3 style="text-align:center; margin-bottom: 15px;">About this Website</h3>
-  <ul style="line-height: 1.8; padding-left: 20px;">
-    <li>This platform allows you to ask questions related to pharmaceutical regulatory bodies.</li>
-    <li>A small payment is required to enable the submission button.</li>
-    <li>Your question and email are securely recorded in a connected Google Sheet.</li>
-    <li>Our expert will send the response to your email address.</li>
-    <li>Simple, private, and trustworthy – one payment, one expert answer.</li>
-  </ul>
-</div>
 
     // Save input in localStorage
     localStorage.setItem("email", email);

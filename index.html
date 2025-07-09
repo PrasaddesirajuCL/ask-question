@@ -1,117 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Ask me anything</title>
+  <meta charset="UTF-8" />
+  <title>Ask Me Anything</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"/>
   <style>
     body {
-      font-family: Arial;
-      background-color: #f0f4f8;
-      text-align: center;
+      font-family: 'Roboto', sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-    form {
-      max-width: 500px;
-      margin: auto;
+    .box {
       background: white;
-      padding: 20px;
+      padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
     }
     input, textarea, button {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 16px;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 15px;
     }
-    button[disabled] {
-      background-color: #ccc;
+    button {
+      background: #008CBA;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #aaa;
       cursor: not-allowed;
     }
-    a.pay-link {
-      display: inline-block;
-      margin-top: 20px;
-      font-weight: bold;
-      color: #007bff;
-      text-decoration: none;
-    }
-    ul.info-list {
-      text-align: left;
-      max-width: 500px;
-      margin: 30px auto 0;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      list-style: disc;
+    .note {
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
 
-  <h2>Ask me anything</h2>
-  <form id="questionForm">
-    <label>Your Email</label>
-    <input type="email" id="email" required />
+<div class="box">
+  <h2>Ask Me Anything</h2>
+  <input type="email" id="email" placeholder="Enter your email" required />
+  <textarea id="question" rows="4" placeholder="Enter your question" required></textarea>
+  <button id="payBtn">Pay ₹10 via Razorpay</button>
+  <div class="note">After payment, return to this page to submit your question.</div>
+  <button id="submitBtn" disabled>Submit Question</button>
+</div>
 
-    <label>Your Question</label>
-    <textarea id="question" rows="5" required></textarea>
+<script>
+  const payBtn = document.getElementById("payBtn");
+  const submitBtn = document.getElementById("submitBtn");
 
-    <a class="pay-link" href="https://rzp.io/rzp/PDQNH98c" target="_blank">Pay here</a>
+  payBtn.addEventListener("click", () => {
+    const email = document.getElementById("email").value.trim();
+    const question = document.getElementById("question").value.trim();
 
-    <br><br>
-    <button type="submit" id="submitBtn" disabled>Submit Question</button>
-  </form>
+    if (!email || !question) {
+      alert("Please fill in both fields before proceeding to payment.");
+      return;
+    }
 
-  <ul class="info-list">
-    <li>This platform is for submitting any pharmeutical Regulatory Bodies related questions.</li>
-    <li>Users must complete a small payment to enable submission.</li>
-    <li>Submitted questions are securely stored in a Google Sheet.</li>
-    <li>Answers will be delivered directly to the provided email ID.</li>
-    <li>Simple and transparent: one payment, one expert answer.</li>
-  </ul>
+    // Save input in localStorage
+    localStorage.setItem("email", email);
+    localStorage.setItem("question", question);
 
-  <script>
-    // Save form data before redirect
-    document.querySelector(".pay-link").addEventListener("click", () => {
-      localStorage.setItem("email", document.getElementById("email").value);
-      localStorage.setItem("question", document.getElementById("question").value);
-    });
+    // Replace with your actual Razorpay Payment Page URL
+    window.open("https://rzp.io/rzp/PDQNH98c", "_blank");
+  });
 
-    // Enable submit button and restore form data if paid
-    window.onload = function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const isPaid = urlParams.get("paid");
-      const submitBtn = document.getElementById("submitBtn");
+  submitBtn.addEventListener("click", () => {
+    const email = localStorage.getItem("email");
+    const question = localStorage.getItem("question");
+    const paymentDone = localStorage.getItem("paymentDone") === "true";
 
-      document.getElementById("email").value = localStorage.getItem("email") || "";
-      document.getElementById("question").value = localStorage.getItem("question") || "";
+    if (!email || !question || !paymentDone) {
+      alert("Payment not confirmed or missing information.");
+      return;
+    }
 
-      if (isPaid === "true") {
-        submitBtn.disabled = false;
-      }
-    };
+    fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, question })
+    })
+    .then(() => {
+      alert("Question submitted successfully!");
+      localStorage.clear();
+      document.getElementById("email").value = '';
+      document.getElementById("question").value = '';
+      submitBtn.disabled = true;
+    })
+    .catch(() => alert("Failed to submit. Please try again."));
+  });
 
-    document.getElementById("questionForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+  window.onload = () => {
+    const email = localStorage.getItem("email");
+    const question = localStorage.getItem("question");
 
-      const email = document.getElementById("email").value;
-      const question = document.getElementById("question").value;
+    // Refill form fields
+    if (email) document.getElementById("email").value = email;
+    if (question) document.getElementById("question").value = question;
 
-      fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
-        method: "POST",
-        body: JSON.stringify({ email, question }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => res.text())
-      .then((data) => {
-        alert("Submitted successfully!");
-        localStorage.clear();
-        location.href = "/";
-      });
-    });
-  </script>
+    // Check if user is redirected after payment
+    const urlParams = new URLSearchParams(window.location.search);
+    const paidParam = urlParams.get("paid");
+
+    if (email && question && paidParam === "true") {
+      submitBtn.disabled = false;
+      localStorage.setItem("paymentDone", "true");
+    } else {
+      submitBtn.disabled = true;
+    }
+  };
+</script>
+
 </body>
 </html>

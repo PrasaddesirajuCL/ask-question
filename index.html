@@ -10,10 +10,10 @@
       font-family: 'Roboto', sans-serif;
       background: #f4f4f4;
       margin: 0;
-      padding: 40px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 40px 20px;
     }
 
     .box {
@@ -21,7 +21,8 @@
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      width: 350px;
+      width: 100%;
+      max-width: 400px;
       margin-bottom: 40px;
     }
 
@@ -57,109 +58,115 @@
     }
 
     .content {
-      width: 100%;
-      max-width: 1000px;
       background: white;
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: left;
+      max-width: 700px;
+      width: 100%;
+    }
+
+    .content h3 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .content ul {
+      line-height: 1.8;
+      padding-left: 20px;
     }
   </style>
 </head>
 <body>
 
-  <div class="box">
-    <div style="text-align: center;">
-      <img src="logo.jpg" alt="S&P Pharma Logo" style="max-width: 150px; height: auto; margin-bottom: 10px;">
-      <h2>Ask Me Anything</h2>
-    </div>
-
-    <input type="email" id="email" placeholder="Enter your email" required />
-    <textarea id="question" rows="4" placeholder="Enter your question" required></textarea>
-    <button id="payBtn">Pay ₹10 via Razorpay</button>
-    <div class="note">After payment, return to this page to submit your question.</div>
-    <button id="submitBtn" disabled>Submit Question</button>
+<div class="box">
+  <div style="text-align: center;">
+    <img src="logo.jpg" alt="S&P Pharma Logo" style="max-width: 150px; height: auto; margin-bottom: 10px;">
+    <h2>Ask Me Anything</h2>
   </div>
 
-  <div class="content">
-    <h3 style="text-align:center; margin-bottom: 15px;">About this Website</h3>
-    <ul style="line-height: 1.8; padding-left: 20px;">
-      <li>This platform allows you to ask questions related to pharmaceutical regulatory bodies.</li>
-      <li>A small payment is required to enable the submission button.</li>
-      <li>Your question and email are securely recorded in a connected Google Sheet.</li>
-      <li>Our expert will send the response to your email address.</li>
-      <li>Simple, private, and trustworthy – one payment, one expert answer.</li>
-    </ul>
-  </div>
+  <input type="email" id="email" placeholder="Enter your email" required />
+  <textarea id="question" rows="4" placeholder="Enter your question" required></textarea>
+  <button id="payBtn">Pay ₹10 via Razorpay</button>
+  <div class="note">After payment, return to this page to submit your question.</div>
+  <button id="submitBtn" disabled>Submit Question</button>
+</div>
 
-  <script>
-    const payBtn = document.getElementById("payBtn");
-    const submitBtn = document.getElementById("submitBtn");
+<div class="content">
+  <h3>About this Website</h3>
+  <ul>
+    <li>This platform allows you to ask questions related to pharmaceutical regulatory bodies.</li>
+    <li>A small payment is required to enable the submission button.</li>
+    <li>Your question and email are securely recorded in a connected Google Sheet.</li>
+    <li>Our expert will send the response to your email address.</li>
+    <li>Simple, private, and trustworthy – one payment, one expert answer.</li>
+  </ul>
+</div>
 
-    payBtn.addEventListener("click", () => {
-      const email = document.getElementById("email").value.trim();
-      const question = document.getElementById("question").value.trim();
+<script>
+  const payBtn = document.getElementById("payBtn");
+  const submitBtn = document.getElementById("submitBtn");
 
-      if (!email || !question) {
-        alert("Please fill in both fields before proceeding to payment.");
-        return;
-      }
+  payBtn.addEventListener("click", () => {
+    const email = document.getElementById("email").value.trim();
+    const question = document.getElementById("question").value.trim();
 
-      // Save input in localStorage
-      localStorage.setItem("email", email);
-      localStorage.setItem("question", question);
+    if (!email || !question) {
+      alert("Please fill in both fields before proceeding to payment.");
+      return;
+    }
 
-      // Razorpay Payment Link
-      window.open("https://rzp.io/rzp/PDQNH98c", "_blank");
-    });
+    localStorage.setItem("email", email);
+    localStorage.setItem("question", question);
+    localStorage.setItem("paymentStarted", "true");
 
-    submitBtn.addEventListener("click", () => {
-      const email = localStorage.getItem("email");
-      const question = localStorage.getItem("question");
-      const paymentDone = localStorage.getItem("paymentDone") === "true";
+    window.open("https://rzp.io/rzp/PDQNH98c", "_blank");
+  });
 
-      if (!email || !question || !paymentDone) {
-        alert("Payment not confirmed or missing information.");
-        return;
-      }
+  submitBtn.addEventListener("click", () => {
+    const email = localStorage.getItem("email");
+    const question = localStorage.getItem("question");
 
-      fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, question })
-      })
-      .then(() => {
-        alert("Question submitted successfully!");
-        localStorage.clear();
-        document.getElementById("email").value = '';
-        document.getElementById("question").value = '';
-        submitBtn.disabled = true;
-      })
-      .catch(() => alert("Failed to submit. Please try again."));
-    });
+    if (!email || !question) {
+      alert("Missing email or question.");
+      return;
+    }
 
-    window.onload = () => {
-      const email = localStorage.getItem("email");
-      const question = localStorage.getItem("question");
+    fetch("https://script.google.com/macros/s/AKfycbwPHOGx2HHtIUSVXOMxvBR1LqVrtYu0xqfMXhtAOnZdm-NmAk2-qQVHLQZoBu7iyh7o/exec", {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, question })
+    })
+    .then(() => {
+      alert("✅ Your question was submitted successfully!");
+      localStorage.clear();
+      location.reload(); // reloads page for next user
+    })
+    .catch(() => alert("Failed to submit. Please try again."));
+  });
 
-      if (email) document.getElementById("email").value = email;
-      if (question) document.getElementById("question").value = question;
+  window.onload = () => {
+    const email = localStorage.getItem("email");
+    const question = localStorage.getItem("question");
+    const paymentStarted = localStorage.getItem("paymentStarted") === "true";
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const paidParam = urlParams.get("paid");
-
-      if (email && question && paidParam === "true") {
-        submitBtn.disabled = false;
-        localStorage.setItem("paymentDone", "true");
-      } else {
-        submitBtn.disabled = true;
-      }
-    };
-  </script>
+    // Only prefill if payment had started and not yet submitted
+    if (email && question && paymentStarted) {
+      document.getElementById("email").value = email;
+      document.getElementById("question").value = question;
+      submitBtn.disabled = false;
+    } else {
+      // Clear form and localStorage if not part of ongoing session
+      localStorage.clear();
+      document.getElementById("email").value = '';
+      document.getElementById("question").value = '';
+      submitBtn.disabled = true;
+    }
+  };
+</script>
 
 </body>
 </html>
